@@ -1,6 +1,6 @@
 #include "sshell.h"
 /**
- * _incrarrptrmmry - increase the memeory allocated by malloc
+ * incrarrptrmem - increase the memeory allocated by malloc
  * @arrptr: hold array of pointer to strings
  * @arrptrln: length  of the old  array pointers
  *

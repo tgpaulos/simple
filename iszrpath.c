@@ -1,7 +1,8 @@
 #include "sshell.h"
 /**
- * _iszrpath - check if the command contain a pathe and separate it.
+ * iszrpath - check if the command contain a pathe and separate it.
  * @cmd: string pointer to the command.
+ * @iszln: pointer to length ptr array
  *
  * Return: arrof string containing command and path.
  */
