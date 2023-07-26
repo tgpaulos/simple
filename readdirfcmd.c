@@ -1,7 +1,7 @@
 #include "sshell.h"
 /**
- * readdir_cmd - reads a directory for a command
- * @dirpath: string pointer to directory path.
+ * readdir_fcmd - reads a directory for a command
+ * @dirpth: string pointer to directory path.
  * @cmd: string pointer to path.
  *
  * Return: full path of the command.

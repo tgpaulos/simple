@@ -37,7 +37,7 @@ int _lktostr(char *strs, char *strf);
 char *_getcmdpath(char *cmd, char *path, char *envp[]);
 void intlzstr(char *strptr, size_t strln, char ch);
 void intlzarrptr(char **arrptr, size_t arrptrln);
-char *_cpsasbtoc(char *str_a, char *str_b,char ch);
+char *_cpsasbtoc(char *str_a, char *str_b, char ch);
 void _freearrmem(char **ptr, size_t ptrln);
 char **iszrpath(char *cmd, int *iszln);
 char *readdir_fcmd(char *dirpth, char *cmd);
