@@ -11,6 +11,15 @@
 #include <dirent.h>
 #include <string.h>
 
+#define BUFFER_SIZE 256
+#define PROMPT "$SSH"
+#define MAX_ARGUMENTS 100
+
+extern char **environ;
+void readCommand(char **argv, ssize_t *read);
+void executeCommand(char **argv);
+void runShell(void);
+
 size_t _strlen(char *s);
 char *_getfullpath(char *cmd);
 char **_tostrarr(char *buff, char *dlmtr, size_t *ptrarrln);
@@ -28,4 +37,5 @@ char *readdir_fcmd(char *dirpth, char *cmd);
 char *readpathfcmd(char *cmd);
 char **sortpath(char **path);
 void _freemem(char *ptr);
+
 #endif
