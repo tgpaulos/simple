@@ -7,23 +7,28 @@ char *get_env_value(const char *name) {
     return getenv(name);
 }
 
-char *build_command_path(const char *command, const char *directory) {
+char *build_command_path(const char *command, const char *directory)
+{
+    size_t i;
+    char *cmd;
     size_t cmd_len = strlen(command);
     size_t dir_len = strlen(directory);
     size_t len = cmd_len + dir_len + 2;
-    char *cmd = malloc(len);
+    char *p;
+    
+    cmd = malloc(len);
     if (cmd == NULL) {
         return NULL;
     }
-    char *p = cmd;
-    for (size_t i = 0; i < dir_len; i++) {
+    
+    for (i = 0; i < dir_len; i++) {
         *p++ = directory[i];
     }
     *p++ = '/';
-    for (size_t i = 0; i < cmd_len; i++) {
+    for (i = 0; i < cmd_len; i++) {
         *p++ = command[i];
     }
-    *p = '\0';
+    p = '\0';
     return cmd;
 }
 
@@ -45,15 +50,15 @@ int search_path_for_command(char **command) {
     return 1;
 }
 
-int main() {
+/*int main() {
     char *command = "ls";
     int result = search_path_for_command(&command);
     if (result == 0) {
-        // Command found: Do something else instead of printf
+        
     } else {
-        // Command not found: Do something else instead of printf
+        
     }
     free(command);
     return 0;
-}
+}*/
 

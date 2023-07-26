@@ -1,5 +1,6 @@
 #ifndef SSHELL_H
 #define SSHELL_H
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,6 +20,8 @@ extern char **environ;
 void readCommand(char **argv, ssize_t *read);
 void executeCommand(char **argv);
 void runShell(void);
+char *build_command_path(const char *command, const char *directory);
+
 
 size_t _strlen(char *s);
 char *_getfullpath(char *cmd);

@@ -42,7 +42,7 @@ void display_path() {
         }
 }
 
-int main() {
+/*int main() {
         display_path();
         return 0;
-}
+}*/
