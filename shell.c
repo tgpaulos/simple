@@ -21,6 +21,7 @@ void readCommand(char **argv, ssize_t *read)
 {
 	char *line = NULL;
 	size_t len = 0;
+	int i;
 
 	*read = getline(&line, &len, stdin);
 	if (*read == -1)
@@ -30,7 +31,7 @@ void readCommand(char **argv, ssize_t *read)
 	}
 
 	argv[0] = strtok(line, " \n");
-	for (int i = 1; i < MAX_ARGS; i++)
+	for (i = 1; i < MAX_ARGS; i++)
 	{
 		argv[i] = strtok(NULL, " \n");
 		if (argv[i] == NULL)
