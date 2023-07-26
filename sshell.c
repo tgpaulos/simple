@@ -27,7 +27,7 @@ int main(int argc, char **argv, char **envp)
 
 	if (argc < 1)
 		return (fail);
-	error = _cpsasbtoc(argv[0], "No such file or directory\n", ':');
+	error = _cpsasbtoc(argv[0], " No such file or directory\n", ':');
 	while (1)
 	{
 		wcnt = write(1, "$", 2);
