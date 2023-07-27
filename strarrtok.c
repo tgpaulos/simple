@@ -34,6 +34,24 @@ char **_tostrarr(char *buff, char *dlmtr, size_t *arrpln)
 	return (arrptr);
 }
 /**
+ * _chkfordlmtr - check a given character  for delimiter characters
+ * @chr: hold the character to becheked
+ * @dlmtr: array of delimeter values
+ *
+ * Return: -1 on failure; index of delimiter on success
+ */
+int _chkfordlmtr(char chr, char *dlmtr)
+{
+	int i;
+
+	for (i = 0; dlmtr[i] != '\0'; i++)
+	{
+		if (chr == dlmtr[i])
+			return (1);
+	}
+	return (-1);
+}
+/**
  * _freearrmem - free the array of memory used.
  * @ptr: pointer to memory.
  * @ptrln: length of the memory.

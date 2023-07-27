@@ -15,17 +15,37 @@
 #define BUFFER_SIZE 256
 #define PROMPT "$SSH"
 #define MAX_ARGUMENTS 100
+#define FAIL -1
+#define SUCC 0
+#define ERRSTR_0 "No such file or directory\n"
 
 extern char **environ;
 void readCommand(char **argv, ssize_t *read);
 void executeCommand(char **argv);
 void runShell(void);
 char *build_command_path(const char *command, const char *directory);
+/**
+ * struct strctcmd - strcuter of for command to be executed by execve
+ * @pthn: the path for the command.
+ * @argv: pointer to the array of string arguments the command take
+ * @envp: the environment variables needed by execve
+ */
 
+struct cmd_t
+{
+	char *pthn;
+	char **argv;
+	char **envp;
+};
+void setcmd_t(struct cmd_t *p, char *pthn, char **argv, char **envp);
 void exit(int status);
+int ashell(int argc, char **argv, char **envp, int *status);
+int ishell(int argc, char **argv, char **envp, int *status);
+int execcmd(struct cmd_t *exeptr, int *status);
 char *lkdirfcmd(char *path, char *cmd);
 char *lkpath(char *envp[]);
-char **readcmd(int argc, char **argv, size_t *ptrarrln, char *envp[]);
+char **readcmd(size_t *arrpln);
+char *getcmd(char *aptr, char **envp);
 size_t _strcp(char *str_a, char *str_b);
 size_t _strlen(char *str);
 char *_getfullpath(char *cmd);

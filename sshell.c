@@ -19,115 +19,182 @@
  */
 int main(int argc, char **argv, char **envp)
 {
-	size_t ptrarrln = 0;
-	char *error, **argcmd;
-	pid_t mpid;
-	ssize_t wcnt;
-	int succ = 0, fail = -1, status;
+	int status;
+	int rstat;
 
 	if (argc < 1)
-		return (fail);
-	error = _cpsasbtoc(argv[0], " No such file or directory\n", ':');
+	{
+		return (FAIL);
+	}
+	else if (argc > 1)
+	{
+		rstat = ashell(argc, argv, envp, &status);
+		if (rstat != 0)
+			return (FAIL);
+	}
+	else if (argc == 1)
+	{
+		rstat = ishell(argc, argv, envp, &status);
+		if (rstat != 0)
+			return (SUCC);
+	}
+
+	return (SUCC);
+}
+/**
+ * ishell - take input from interactive terminal and execute them
+ * @argc: number of arguments
+ * @argv: string of arguments
+ * @envp: string of environment variable and their values.
+ * @status: global variable that holds the value.
+ *
+ * Return: 0-on success otherwise any number other than zero depending on error
+ */
+int ishell(int argc, char **argv, char **envp, int *status)
+{
+	ssize_t wcnt;
+	size_t arrptrln;
+	char **iaptr, *errptr;
+	char **envrn = {NULL};
+	char **arg_v = {NULL};
+	struct cmd_t cmdtoexe;
+
+	(void)argc;
+	if (argv == NULL)
+		return (FAIL);
+	if (argv[0] == NULL)
+		return (FAIL);
+	errptr = _cpsasbtoc(argv[0], ERRSTR_0, ':');
+	setcmd_t(&cmdtoexe, NULL, arg_v, envrn);
 	while (1)
 	{
 		wcnt = write(1, "$", 2);
 		if (wcnt < 0)
 			continue;
-		argcmd = readcmd(argc, argv, &ptrarrln, envp);
-		if (argcmd == NULL || argcmd[0] == NULL)
+		iaptr = readcmd(&arrptrln);
+		if (iaptr == NULL || iaptr[0] == NULL)
 		{
-			write(1, error, _strlen(error));
+			write(STDOUT_FILENO, errptr, _strlen(errptr));
 			continue;
 		}
-		if (_streq(argcmd[0], "exit") > 0)
-			exit(1);
-		mpid = fork();
-		if (mpid == -1)
+		iaptr[0] = getcmd(iaptr[0], envp);
+		if (iaptr[0] == NULL)
 		{
-			perror("fork");
-			return (fail);
+			write(STDOUT_FILENO, errptr, _strlen(errptr));
+			continue;
 		}
-		else if (mpid == 0)
-		{
-			execve(argcmd[0], argcmd, envp);
-			perror("execve");
-			_exit(1);
-		}
-		wait(&status);
-		free(argcmd[0]);
-		free(argcmd);
+		setcmd_t(&cmdtoexe, iaptr[0], iaptr, envp);
+		execcmd(&cmdtoexe, status);
+		free(iaptr[0]);
+		free(iaptr);
 	}
-	free(error);
-	return (succ);
+	free(errptr);
+	return (SUCC);
+}
+/**
+ * ashell - take input from arguments and execute them
+ * @argc: number of arguments
+ * @argv: string of arguments
+ * @envp: environment variables and their value.
+ * @status: global variable that hold the status of the program(process)
+ *
+ * Description: this executes commands from argumuents.
+ * Return: 0 on succes any number otherwise.
+ */
+int ashell(int argc, char **argv, char **envp, int *status)
+{
+	int i;
+	char *errptr;
+	char **aptr;
+	char **envrn = {NULL};
+	char **arg_v = {NULL};
+	struct cmd_t cmdtoexe;
+
+	if (argv == NULL)
+		return (FAIL);
+	errptr = _cpsasbtoc(argv[0], _cpsasbtoc(argv[1], ERRSTR_0, ':'), ':');
+	setcmd_t(&cmdtoexe, NULL, arg_v, envrn);
+	aptr = (char **)malloc(argc * sizeof(char *));
+	if (aptr == NULL)
+		return (FAIL);
+	for (i = 0; i < argc; i++)
+		aptr[i] = argv[i + 1];
+	aptr[i] = NULL;
+	aptr[0] = getcmd(aptr[0], envp);
+	if (aptr[0] == NULL)
+	{
+		write(STDOUT_FILENO, errptr, _strlen(errptr));
+		return (FAIL);
+	}
+	setcmd_t(&cmdtoexe, aptr[0], aptr, envp);
+	execcmd(&cmdtoexe, status);
+	free(aptr);
+	return (SUCC);
+}
+
+/**
+ * execcmd - executes the command
+ * @exeptr: pointer to the struct of arguments
+ * @status: pointer to environment
+ *
+ * Return: exit on success -1 on failure
+ */
+
+int execcmd(struct cmd_t *exeptr, int *status)
+{
+	pid_t mpid;
+
+	if (exeptr->pthn == NULL || exeptr->argv == NULL)
+		return (FAIL);
+	if (_streq(exeptr->argv[0], "exit") > 0)
+		exit(1);
+	mpid = fork();
+	if (mpid == -1)
+	{
+		perror("fork");
+		return (FAIL);
+	}
+	else if (mpid == 0)
+	{
+		execve(exeptr->pthn, exeptr->argv, exeptr->envp);
+		perror("execve");
+		_exit(1);
+	}
+	wait(status);
+	return (SUCC);
 }
 /**
  * readcmd - reads command from std input
- * @argc: number of arg passed to main
- * @argv: arg passed to the main.
- * @ptrarrln: the length of returned argument array pointer.
- * @envp: pointer to environment variable
+ * @arrpln: the length of returned argument array pointer.
  *
- * Return: pointer command read .
+ * Return: pointer command read.
  */
-char **readcmd(int argc, char **argv, size_t *ptrarrln, char *envp[])
+char **readcmd(size_t *arrpln)
 {
 	char buff[1024];
-	char **argcmd, **cmd;
-	ssize_t rcnt;
-	int iszln = 0;
+	char **argcmd;
+	ssize_t rcnt = 0;
+	int tcnt = -1;
 	size_t bsize = 1024;
 	char *dlmtr_c = " \n";
 
 	argcmd = NULL;
-	(void)(argc + argv);
 	intlzstr(buff, bsize, '\0');
-	rcnt = read(0, buff, bsize);
+	while (rcnt == 0 && tcnt < 10)
+	{
+		rcnt = read(STDIN_FILENO, buff, bsize);
+		tcnt++;
+	}
+	if (rcnt == 0 && tcnt > 9)
+	{
+		exit(1);
+	}
 	if (rcnt == -1)
 		return (NULL);
-	argcmd = _tostrarr(buff, dlmtr_c, ptrarrln);
+	argcmd = _tostrarr(buff, dlmtr_c, arrpln);
 	if (argcmd == NULL)
 		return (NULL);
 	if (argcmd[0] == NULL)
 		return (NULL);
-	if (_streq(argcmd[0], "exit") > 0)
-		return (argcmd);
-	cmd = iszrpath(argcmd[0], &iszln);
-	if (cmd == NULL)
-		return (NULL);
-	argcmd[0] = _getcmdpath(cmd[0], cmd[1], envp);
-	_freearrmem(cmd, iszln);
-	free(cmd);
-	if (argcmd[0] == NULL)
-		return (NULL);
 	return (argcmd);
-}
-
-/**
- * intlzstr - initalizes the string or arr of chars.
- * @strptr: pointer to the string to be initialized.
- * @strln: size of the array
- * @ch: character to be initalized with
- *
- */
-
-void intlzstr(char *strptr, size_t strln, char ch)
-{
-	size_t i;
-
-	for (i = 0; i < strln; i++)
-		strptr[i] = ch;
-}
-/**
- * intlzarrptr - initialize array of pointers to NULL
- * @arrptr: pointer to array of pointers
- * @arrptrln: length of the array of pointers.
- *
- * Return: initialized array of pointers.
- */
-void intlzarrptr(char **arrptr, size_t arrptrln)
-{
-	size_t i;
-
-	for (i = 0; i < arrptrln; i++)
-		arrptr[i] = NULL;
 }

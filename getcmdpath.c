@@ -86,47 +86,31 @@ char *lkpath(char *envp[])
 	return (NULL);
 }
 /**
- * readpathfcmd - each dir in path for command specified.
- * @cmd: command to look for.
+ * getcmd - each dir in path for command specified.
+ * @aptr: command to look for.
+ * @envp: pointer to environment variable.
  *
  * Return: full path command
  */
 
-char *readpathfcmd(char *cmd)
+char *getcmd(char *aptr, char **envp)
 {
-	char *envt = "/etc/environment";
-	char **arrptr, **arrptrpth;
-	char *cmd_n;
-	char buff[1024];
-	char *dlmtr[] = {"\"", ":"};
-	ssize_t rcnt;
-	int fd, i = 1, bsize;
-	size_t arrptrln, arrptrpthln;
+	char **cmd;
+	int iszln = 0;
 
-	bsize = 1024;
-	fd = open(envt, O_RDONLY);
-	if (fd == -1)
+	if (aptr == NULL)
 		return (NULL);
-	intlzstr(buff, bsize, '\0');
-	rcnt = read(fd, &buff, bsize);
-	if (rcnt < 0)
+	if (_streq(aptr, "exit") > 0)
+		exit(1);
+	cmd = iszrpath(aptr, &iszln);
+	if (cmd == NULL)
 		return (NULL);
-	arrptr = _tostrarr(buff, dlmtr[0], &arrptrln);
-	arrptrpth = _tostrarr(arrptr[1], dlmtr[1], &arrptrpthln);
-	free(arrptr);
-	for (i = 0; arrptrpth[i] != NULL && i < (int)arrptrpthln; i++)
-	{
-		printf("call readdir here\n");
-		cmd_n = readdir_fcmd(arrptrpth[i], cmd);
-		if (cmd_n != NULL)
-		{
-			close(fd);
-			return (cmd_n);
-		}
-	}
-
-	close(fd);
-	return (NULL);
+	aptr = _getcmdpath(cmd[0], cmd[1], envp);
+	_freearrmem(cmd, iszln);
+	free(cmd);
+	if (aptr == NULL)
+		return (NULL);
+	return (aptr);
 }
 /**
  * sortpath - sorts directories in icreasing number of forwardslash
