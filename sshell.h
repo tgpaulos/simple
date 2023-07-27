@@ -31,18 +31,27 @@ int _atoi(char *s);
 
 
 
+
+
+void exit(int status);
+char *lkdirfcmd(char *path, char *cmd);
+char *lkpath(char *envp[]);
+char **readcmd(int argc, char **argv, size_t *ptrarrln, char *envp[]);
+size_t _strcp(char *str_a, char *str_b);
+size_t _strlen(char *str);
+
 char *_getfullpath(char *cmd);
 char **_tostrarr(char *buff, char *dlmtr, size_t *ptrarrln);
 char **incrarrptrmem(char **arrptr, size_t *arrptrln);
 int _chkfordlmtr(char chr, char *dlmtr);
 int _streq(char *strs, char *strf);
 int _lktostr(char *strs, char *strf);
-char *_getcmdpath(char *cmd, char *path);
+char *_getcmdpath(char *cmd, char *path, char *envp[]);
 void intlzstr(char *strptr, size_t strln, char ch);
 void intlzarrptr(char **arrptr, size_t arrptrln);
-char *_cpsasbtoc(char *str_a, char *str_b);
+char *_cpsasbtoc(char *str_a, char *str_b, char ch);
 void _freearrmem(char **ptr, size_t ptrln);
-char **iszrpath(char *cmd, char *path);
+char **iszrpath(char *cmd, int *iszln);
 char *readdir_fcmd(char *dirpth, char *cmd);
 char *readpathfcmd(char *cmd);
 char **sortpath(char **path);
