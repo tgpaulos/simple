@@ -185,12 +185,10 @@ char **readcmd(size_t *arrpln)
 		rcnt = read(STDIN_FILENO, buff, bsize);
 		tcnt++;
 	}
-	if (rcnt == 0 && tcnt > 9)
+	if ((rcnt == 0 && tcnt > 9) || rcnt < 0)
 	{
 		exit(1);
 	}
-	if (rcnt == -1)
-		return (NULL);
 	argcmd = _tostrarr(buff, dlmtr_c, arrpln);
 	if (argcmd == NULL)
 		return (NULL);
