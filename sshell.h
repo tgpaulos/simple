@@ -12,20 +12,32 @@
 #include <dirent.h>
 #include <string.h>
 
-#define BUFFER_SIZE 256
+#define BUFFER_SIZE 1024
 #define PROMPT "$SSH"
+
+#define MAX_CMD_LENGTH 128
+#define MAX_ARGS 10
+
+
 #define MAX_ARGUMENTS 100
 #define FAIL -1
 #define SUCC 0
 #define ERRSTR_0 "No such file or directory\n"
 
 extern char **environ;
-void readCommand(char **argv, ssize_t *read);
-void executeCommand(char **argv);
-void runShell(void);
+void display_prompt();
+void execute_command(char **args);
+void handle_exit();
+void handle_env();
+
 char *build_command_path(const char *command, const char *directory);
+<<<<<<< HEAD
+size_t _strlen(char *s);
+int _slen(char *s);
+=======
 
 int _sstrlen(char *s);
+>>>>>>> c7c8b0150816f9ba8edd6eea2b0d7dbe3419c7b7
 char *_memcpy(char *dest, char *src, unsigned int n);
 int _strcmp(char *s1, char *s2);
 char *_strncpy(char *dest, char *src, int n);
