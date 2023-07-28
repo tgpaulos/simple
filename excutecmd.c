@@ -6,8 +6,8 @@
 #include <sys/wait.h>
 
 /**
- *execute_command -
- *
+ * execute_command - execute the command
+ * @args: hold command and arguments
  *
  */
 

@@ -28,7 +28,7 @@ char **_tostrarr(char *buff, char *dlmtr, size_t *arrpln)
 				return (NULL);
 		}
 		j++;
-		arrptr[j] = NULL; 
+		arrptr[j] = NULL;
 	}
 	*arrpln = j;
 	return (arrptr);

@@ -25,10 +25,10 @@
 #define ERRSTR_0 "No such file or directory\n"
 
 extern char **environ;
-void display_prompt();
+void display_prompt(void);
 void execute_command(char **args);
-void handle_exit();
-void handle_env();
+void handle_exit(void);
+void handle_env(void);
 
 char *build_command_path(const char *command, const char *directory);
 char *_memcpy(char *dest, char *src, unsigned int n);
