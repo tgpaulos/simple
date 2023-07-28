@@ -46,6 +46,7 @@ struct cmd_t
 };
 void setcmd_t(struct cmd_t *p, char *pthn, char **argv, char **envp);
 void exit(int status);
+int _readfd(char **argv, char **envp, int *status);
 int ashell(int argc, char **argv, char **envp, int *status);
 int ishell(int argc, char **argv, char **envp, int *status);
 int execcmd(struct cmd_t *exeptr, int *status);

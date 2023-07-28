@@ -1,5 +1,70 @@
 #include "sshell.h"
 /**
+ * execcmd - executes the command
+ * @exeptr: pointer to the struct of arguments
+ * @status: pointer to environment
+ *
+ * Return: exit on success -1 on failure
+ */
+
+int execcmd(struct cmd_t *exeptr, int *status)
+{
+	pid_t mpid;
+
+	if (exeptr->pthn == NULL || exeptr->argv == NULL)
+		return (FAIL);
+	if (_streq(exeptr->argv[0], "exit") > 0)
+		exit(1);
+	mpid = fork();
+	if (mpid == -1)
+	{
+		perror("fork");
+		return (FAIL);
+	}
+	else if (mpid == 0)
+	{
+		execve(exeptr->pthn, exeptr->argv, exeptr->envp);
+		perror("execve");
+		_exit(1);
+	}
+	wait(status);
+	return (SUCC);
+}
+
+/**
+ * readcmd - reads command from std input
+ * @arrpln: the length of returned argument array pointer.
+ *
+ * Return: pointer command read.
+ */
+char **readcmd(size_t *arrpln)
+{
+	char buff[1024];
+	char **argcmd;
+	ssize_t rcnt = 0;
+	int tcnt = -1;
+	size_t bsize = 1024;
+	char *dlmtr_c = " \n";
+
+	argcmd = NULL;
+	intlzstr(buff, bsize, '\0');
+	while (rcnt == 0 && tcnt < 10)
+	{
+		rcnt = read(STDIN_FILENO, buff, bsize);
+		tcnt++;
+	}
+	if ((rcnt == 0 && tcnt > 9) || rcnt < 0)
+	{
+		exit(1);
+	}
+	argcmd = _tostrarr(buff, dlmtr_c, arrpln);
+	if (argcmd == NULL)
+		return (NULL);
+	if (argcmd[0] == NULL)
+		return (NULL);
+	return (argcmd);
+}
+/**
  * iszrpath - check if the command contain a pathe and separate it.
  * @cmd: string pointer to the command.
  * @iszln: pointer to length ptr array
