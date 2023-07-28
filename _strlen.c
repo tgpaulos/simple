@@ -7,7 +7,7 @@
  *Return:length
  */
 
-int _strlen(char *s)
+int _sstrlen(char *s)
 {
 	int ln = 0;
 
@@ -18,6 +18,7 @@ int _strlen(char *s)
 	}
 
 	return (ln);
+}
 
 /**
  * _strlen - counts the character in string array
